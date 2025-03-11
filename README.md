@@ -1,14 +1,35 @@
-## Comparison: RAG vs Fine-Tuned LLM  
+# Fine-Tuning Model
 
-| Feature                | RAG-based Approach (`pdf_rag_question_generator.ipynb`) | Fine-Tuned LLM (`pdf_finetuned_llm_question_generator.ipynb`) |
-|------------------------|-------------------|------------------------------------------------------|
-| Retrieval Method      | FAISS + Semantic Search | N/A |
-| Embedding Model       | `sentence-transformers/all-mpnet-base-v2` | N/A |
-| Question Generation   | Google Gemini API | Mistral-7B (Fine-tuned) *(⚠️ Not fully implemented due to resource limitations)* |
-| Dependency on Context | High (Retrieves relevant chunks) | Medium (Processes full text directly) |
-| Accuracy & Relevance  | Moderate | Potentially High (Needs fine-tuning) |
-| Computational Cost    | Lower | High *(⚠️ Requires more resources for training & inference)* |
+## Deskripsi Proyek
+Proyek ini bertujuan untuk melakukan fine-tuning model dengan menggunakan dataset teks biografi. Dataset ini digunakan untuk melatih model dalam menghasilkan pertanyaan berbobot terhadap teks biografi.
 
----
+## Struktur Notebook
 
-⚠️ **Note:** The **fine-tuned LLM approach** is not fully implemented due to **hardware limitations**. The model requires **higher computational resources**, making it difficult to run on standard CPUs. Further optimization or cloud-based deployment is needed to complete the implementation.
+### 1. Pengunduhan Dataset
+Notebook mengunduh dataset dari Google Drive dalam format CSV yang terdiri dari:
+- `train_data.csv`
+
+Dataset diunduh menggunakan `gdown`, dengan fungsi berikut:
+```python
+import gdown
+
+def download_folder_from_drive(url, output_path):
+    folder_id = url.split("/")[-1]
+    gdown.download_folder(f"https://drive.google.com/drive/folders/{folder_id}", output=output_path, quiet=False)
+```
+
+### 2. Pemrosesan Dataset
+Dataset CSV dikonversi ke format JSONL yang diperlukan untuk fine-tuning model. Contoh format JSONL:
+```json
+{
+    "text": "Teks Biografi:\n[isi teks]",
+    "question": "[pertanyaan yang dihasilkan]"
+}
+```
+Proses konversi dilakukan dengan `pandas` dan `json`.
+
+### 3. Fine-Tuning Model
+Langkah-langkah fine-tuning melibatkan:
+- Menggunakan model dasar (Llama-3.2-3B-Instruct).
+- Melatih model dengan dataset JSONL.
+- Menyesuaikan hyperparameter (batch size, learning rate, dll.).
